@@ -1,5 +1,6 @@
 from django.db import models
-from uuid import uuid
+import uuid
+from api.models.product import Product
 
 
 class Category(models.Model):
@@ -7,5 +8,6 @@ class Category(models.Model):
     identifier = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=200)
 
-    def __string__(self):
+    # ensures a readable name appears in the Django admin and any queryset outputs
+    def __str__(self):
         return f"{self.name}"

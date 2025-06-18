@@ -1,6 +1,5 @@
 from django.db import models
 import uuid
-from api.models.product import Product
 
 
 class Category(models.Model):

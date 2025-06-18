@@ -1,8 +1,9 @@
 from django.db import models
 import uuid
 
+
 class Tag(models.Model):
-    # ENSURE DEFAULT GLOBAL UNIQUENESS
+    # Use UUID as the primary key to ensure global uniqueness and prevent exposure of predictable IDs
     identifier = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=200)
 

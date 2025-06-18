@@ -8,6 +8,7 @@ class Product(models.Model):
     # Use UUID as the primary key to ensure global uniqueness and prevent exposure of predictable IDs
     identifier = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=200)
+    description = models.CharField(max_length=500)
     # assuming each product can only have one category
     # I prefer to access reverse relationships with product.category_set.all() instead of using a related_name (more explicit)
     category = models.ForeignKey(

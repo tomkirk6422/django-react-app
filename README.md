@@ -27,6 +27,9 @@ A full-stack web application built with Django REST Framework and React that all
 2. Multiple products can have multiple tags (Many to Many Relationship)
 3. When querying books using multiple tags in query params, a book will be included in the queryset as long it matches one of the tags.
 
+**AI usage:**
+All code in the backend folder was written manually, The front end code was partially written by AI, partially written by hand
+
 Backend Setup (Django)
 
 #### Navigate to backend directory

@@ -177,7 +177,6 @@ const Header = styled.div`
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   margin: 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 `;
 
 const HeaderIcon = styled.span`
@@ -206,7 +205,6 @@ const SearchPanel = styled.div`
   padding: 20px;
   height: 100%;
   overflow-y: auto;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
 `;
 
 const SearchSection = styled.div`

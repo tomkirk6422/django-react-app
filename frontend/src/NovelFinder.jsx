@@ -34,8 +34,9 @@ function NovelFinder() {
     setSelectedTags([]);
     setSearchTerm("");
     setSelectedCategory("");
-    // Fetch all products after clearing filters
-    await loadProducts();
+    // Clear all results
+    setProducts([]);
+    setError("");
   };
 
   // Function to load products using the API

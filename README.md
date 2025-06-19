@@ -63,7 +63,7 @@ pip install -r requirements.txt
 # If virtual environment activation works properly
 python manage.py runserver
 
-# If you have ModuleNotFoundError error, try deleting venv contents and reinstalling packages with
+# If it fails or you have ModuleNotFoundError, try deleting venv and reinstalling packages with
 venv\Scripts\python.exe -m pip install --no-cache-dir -r requirements.txt
 ```
 

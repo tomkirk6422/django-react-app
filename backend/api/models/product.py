@@ -9,13 +9,11 @@ class Product(models.Model):
     identifier = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
-    # assuming each product can only have one category
     # I prefer to access reverse relationships with product.category_set.all() instead of using a related_name (more explicit)
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
     )
-    # assuming each multiple products can have multiple tags.
     tags = models.ManyToManyField(Tag)
 
     # ensures a readable name appears in the Django admin and any queryset outputs

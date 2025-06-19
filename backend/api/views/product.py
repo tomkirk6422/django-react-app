@@ -22,10 +22,11 @@ class ProductViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         queryset = Product.objects.select_related("category").prefetch_related("tags")
         
         # Im assuming the searching by multiple tags is using OR Logic, so a book only has to match 1 of 
-        # the tags in the query params to be included in the query. DjangoFilterBackend with filterset_fields
+        # the tags provided in the query params. DjangoFilterBackend with filterset_fields
         # only uses the last parameter when multiple tags__name values are provided, so we handle multiple tag filtering manually 
         tag_names = self.request.query_params.getlist('tags__name')
         if tag_names:
              queryset = queryset.filter(tags__name__in=tag_names).distinct()
 
         return queryset
+    

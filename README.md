@@ -21,11 +21,11 @@ A full-stack web application built with Django REST Framework and React that all
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have the following installed:
+**Assumptions:**
 
-- **Python 3.8+** ([Download Python](https://python.org/downloads/))
-- **Node.js 16+** ([Download Node.js](https://nodejs.org/))
-- **Git** ([Download Git](https://git-scm.com/downloads))
+1. Each product can only have one category (Many to One Relationship)
+2. Multiple products can have multiple tags (Many to Many Relationship)
+3. When querying books using multiple tags in query params, a book will be included in the queryset as long it matches one of the tags.
 
 Backend Setup (Django)
 

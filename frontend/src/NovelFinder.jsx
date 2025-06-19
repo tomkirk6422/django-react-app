@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import { fetchProducts, fetchAllProducts } from "./api.js";
+import { fetchProducts } from "./api.js";
+import Results from "./Results.jsx";
 
 function NovelFinder() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,24 +66,6 @@ function NovelFinder() {
   const handleSearch = () => {
     loadProducts(searchTerm, selectedCategory, selectedTags);
   };
-
-  // Load initial products when component mounts
-  useEffect(() => {
-    const loadInitialProducts = async () => {
-      setLoading(true);
-      const result = await fetchAllProducts();
-
-      if (result.success) {
-        setProducts(result.data);
-      } else {
-        setError(result.error);
-      }
-
-      setLoading(false);
-    };
-
-    loadInitialProducts();
-  }, []);
 
   return (
     <Container>
@@ -162,48 +145,7 @@ function NovelFinder() {
           </ButtonSection>
         </SearchPanel>
 
-        <ResultsPanel>
-          <ResultsSection>
-            <ResultsHeader>
-              <ResultsIcon>📖</ResultsIcon>
-              <ResultsTitle>
-                Book Results ({products.length} found)
-              </ResultsTitle>
-            </ResultsHeader>
-
-            {error && <ErrorMessage>{error}</ErrorMessage>}
-
-            {loading ? (
-              <LoadingMessage>Loading products...</LoadingMessage>
-            ) : (
-              <BooksGrid>
-                {products.length > 0
-                  ? products.map((product) => (
-                      <BookCard key={product.identifier}>
-                        <BookTitle>{product.name}</BookTitle>
-                        <BookDescription>{product.description}</BookDescription>
-                        <BookMeta>
-                          <BookCategory>
-                            📁 {product.category?.name}
-                          </BookCategory>
-                          {product.tags && product.tags.length > 0 && (
-                            <BookTags>
-                              🏷️{" "}
-                              {product.tags.map((tag) => tag.name).join(", ")}
-                            </BookTags>
-                          )}
-                        </BookMeta>
-                      </BookCard>
-                    ))
-                  : !loading && (
-                      <NoResultsMessage>
-                        No products found. Try adjusting your filters.
-                      </NoResultsMessage>
-                    )}
-              </BooksGrid>
-            )}
-          </ResultsSection>
-        </ResultsPanel>
+        <Results products={products} loading={loading} error={error} />
       </MainContent>
     </Container>
   );
@@ -254,11 +196,6 @@ const SearchPanel = styled.div`
   background-color: #2a2a2a;
   border: 1px solid #444;
   padding: 20px;
-`;
-
-const ResultsPanel = styled.div`
-  flex: 1;
-  min-height: 500px;
 `;
 
 const SearchSection = styled.div`
@@ -411,108 +348,4 @@ const ClearButton = styled.button`
   &:hover {
     background-color: #333;
   }
-`;
-
-const ResultsSection = styled.div`
-  border: 1px solid #444;
-  padding: 15px;
-  background-color: #2a2a2a;
-  min-height: 500px;
-`;
-
-const ResultsHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #444;
-`;
-
-const ResultsIcon = styled.span`
-  font-size: 18px;
-  color: #60a5fa;
-`;
-
-const ResultsTitle = styled.h2`
-  margin: 0;
-  font-size: 16px;
-  color: #ffffff;
-`;
-
-const BooksGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  max-height: 600px;
-  overflow-y: auto;
-`;
-
-const BookCard = styled.div`
-  padding: 15px;
-  background-color: #1a1a1a;
-  border: 1px solid #444;
-  color: #ffffff;
-  font-family: "Courier New", monospace;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #333;
-    border-color: #555;
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: #ef4444;
-  background-color: #2a1a1a;
-  border: 1px solid #ef4444;
-  padding: 10px;
-  margin-bottom: 15px;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-`;
-
-const LoadingMessage = styled.div`
-  color: #60a5fa;
-  text-align: center;
-  padding: 20px;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-`;
-
-const NoResultsMessage = styled.div`
-  color: #888;
-  text-align: center;
-  padding: 20px;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-`;
-
-const BookTitle = styled.h3`
-  margin: 0 0 8px 0;
-  font-size: 16px;
-  color: #4ade80;
-`;
-
-const BookDescription = styled.p`
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  color: #ffffff;
-  line-height: 1.4;
-`;
-
-const BookMeta = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const BookCategory = styled.span`
-  font-size: 12px;
-  color: #fbbf24;
-`;
-
-const BookTags = styled.span`
-  font-size: 12px;
-  color: #60a5fa;
 `;

@@ -36,6 +36,8 @@ function NovelFinder() {
     setSelectedTags([]);
     setSearchTerm("");
     setSelectedCategory("");
+    // Fetch all products after clearing filters
+    fetchProducts();
   };
 
   // Function to build query parameters for API call
@@ -85,6 +87,11 @@ function NovelFinder() {
     fetchProducts();
   };
 
+  // Load initial products when component mounts
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
     <Container>
       <Header>
@@ -92,103 +99,116 @@ function NovelFinder() {
         <HeaderTitle>Novel Finder (Product Finder)</HeaderTitle>
       </Header>
 
-      <SearchSection>
-        <SearchIcon>🔍</SearchIcon>
-        <SearchBox>
-          <SearchInput
-            type="text"
-            placeholder="Search by description..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-          />
-        </SearchBox>
-      </SearchSection>
+      <MainContent>
+        <SearchPanel>
+          <SearchSection>
+            <SearchIcon>🔍</SearchIcon>
+            <SearchBox>
+              <SearchInput
+                type="text"
+                placeholder="Search by description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+              />
+            </SearchBox>
+          </SearchSection>
 
-      <FiltersSection>
-        <FilterRow>
-          <FilterGroup>
-            <FilterIcon>📁</FilterIcon>
-            <FilterLabel>Category:</FilterLabel>
-            <Dropdown>
-              <DropdownSelect
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="">Select Category</option>
-                <option value="Fiction">Fiction</option>
-                <option value="Non-Fiction">Non-Fiction</option>
-                <option value="Biography">Biography</option>
-                <option value="Children">Children</option>
-                <option value="Science & Technology">
-                  Science & Technology
-                </option>
-              </DropdownSelect>
-            </Dropdown>
-          </FilterGroup>
-        </FilterRow>
+          <FiltersSection>
+            <FilterRow>
+              <FilterGroup>
+                <FilterIcon>📁</FilterIcon>
+                <FilterLabel>Category:</FilterLabel>
+                <Dropdown>
+                  <DropdownSelect
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Biography">Biography</option>
+                    <option value="Children">Children</option>
+                    <option value="Science & Technology">
+                      Science & Technology
+                    </option>
+                  </DropdownSelect>
+                </Dropdown>
+              </FilterGroup>
+            </FilterRow>
 
-        <FilterRow>
-          <FilterGroup>
-            <FilterIcon>🏷️</FilterIcon>
-            <FilterLabel>Tags:</FilterLabel>
-            <TagsContainer>
-              {availableTags.map((tag) => (
-                <TagButton
-                  key={tag}
-                  selected={selectedTags.includes(tag)}
-                  onClick={() => handleTagToggle(tag)}
-                >
-                  {tag}
-                </TagButton>
-              ))}
-            </TagsContainer>
-          </FilterGroup>
-        </FilterRow>
-      </FiltersSection>
+            <FilterRow>
+              <FilterGroup>
+                <FilterIcon>🏷️</FilterIcon>
+                <FilterLabel>Tags:</FilterLabel>
+                <TagsContainer>
+                  {availableTags.map((tag) => (
+                    <TagButton
+                      key={tag}
+                      selected={selectedTags.includes(tag)}
+                      onClick={() => handleTagToggle(tag)}
+                    >
+                      {tag}
+                    </TagButton>
+                  ))}
+                </TagsContainer>
+              </FilterGroup>
+            </FilterRow>
+          </FiltersSection>
 
-      <ButtonSection>
-        <SearchButton onClick={handleSearch} disabled={loading}>
-          {loading ? "Searching..." : "Find Novel"}
-        </SearchButton>
-        <ClearButton onClick={handleClearFilters}>Clear Filters</ClearButton>
-      </ButtonSection>
+          <ButtonSection>
+            <SearchButton onClick={handleSearch} disabled={loading}>
+              {loading ? "Searching..." : "Find Novel"}
+            </SearchButton>
+            <ClearButton onClick={handleClearFilters}>
+              Clear Filters
+            </ClearButton>
+          </ButtonSection>
+        </SearchPanel>
 
-      <ResultsSection>
-        <ResultsHeader>
-          <ResultsIcon>📖</ResultsIcon>
-          <ResultsTitle>Book Results ({products.length} found)</ResultsTitle>
-        </ResultsHeader>
+        <ResultsPanel>
+          <ResultsSection>
+            <ResultsHeader>
+              <ResultsIcon>📖</ResultsIcon>
+              <ResultsTitle>
+                Book Results ({products.length} found)
+              </ResultsTitle>
+            </ResultsHeader>
 
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+            {error && <ErrorMessage>{error}</ErrorMessage>}
 
-        {loading ? (
-          <LoadingMessage>Loading products...</LoadingMessage>
-        ) : (
-          <BooksGrid>
-            {products.length > 0
-              ? products.map((product) => (
-                  <BookCard key={product.identifier}>
-                    <BookTitle>{product.name}</BookTitle>
-                    <BookDescription>{product.description}</BookDescription>
-                    <BookMeta>
-                      <BookCategory>📁 {product.category?.name}</BookCategory>
-                      {product.tags && product.tags.length > 0 && (
-                        <BookTags>
-                          🏷️ {product.tags.map((tag) => tag.name).join(", ")}
-                        </BookTags>
-                      )}
-                    </BookMeta>
-                  </BookCard>
-                ))
-              : !loading && (
-                  <NoResultsMessage>
-                    No products found. Try adjusting your filters.
-                  </NoResultsMessage>
-                )}
-          </BooksGrid>
-        )}
-      </ResultsSection>
+            {loading ? (
+              <LoadingMessage>Loading products...</LoadingMessage>
+            ) : (
+              <BooksGrid>
+                {products.length > 0
+                  ? products.map((product) => (
+                      <BookCard key={product.identifier}>
+                        <BookTitle>{product.name}</BookTitle>
+                        <BookDescription>{product.description}</BookDescription>
+                        <BookMeta>
+                          <BookCategory>
+                            📁 {product.category?.name}
+                          </BookCategory>
+                          {product.tags && product.tags.length > 0 && (
+                            <BookTags>
+                              🏷️{" "}
+                              {product.tags.map((tag) => tag.name).join(", ")}
+                            </BookTags>
+                          )}
+                        </BookMeta>
+                      </BookCard>
+                    ))
+                  : !loading && (
+                      <NoResultsMessage>
+                        No products found. Try adjusting your filters.
+                      </NoResultsMessage>
+                    )}
+              </BooksGrid>
+            )}
+          </ResultsSection>
+        </ResultsPanel>
+      </MainContent>
     </Container>
   );
 }
@@ -202,7 +222,7 @@ const Container = styled.div`
   color: #ffffff;
   min-height: 100vh;
   font-family: "Courier New", monospace;
-  max-width: 600px;
+  max-width: 1400px;
   margin: 0 auto;
   border: 2px solid #333;
 `;
@@ -227,6 +247,24 @@ const HeaderTitle = styled.h1`
   color: #4ade80;
 `;
 
+const MainContent = styled.div`
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+`;
+
+const SearchPanel = styled.div`
+  flex: 0 0 400px;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  padding: 20px;
+`;
+
+const ResultsPanel = styled.div`
+  flex: 1;
+  min-height: 500px;
+`;
+
 const SearchSection = styled.div`
   display: flex;
   align-items: center;
@@ -241,7 +279,7 @@ const SearchIcon = styled.span`
 
 const SearchBox = styled.div`
   flex: 1;
-  background-color: #2a2a2a;
+  background-color: #1a1a1a;
   border: 1px solid #444;
   padding: 2px;
 `;
@@ -266,12 +304,12 @@ const FiltersSection = styled.div`
 `;
 
 const FilterRow = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 `;
 
 const FilterGroup = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
 `;
 
@@ -279,20 +317,23 @@ const FilterIcon = styled.span`
   font-size: 16px;
 `;
 
-const FilterLabel = styled.span`
+const FilterLabel = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: #fbbf24;
   font-size: 14px;
-  min-width: 70px;
+  margin-bottom: 8px;
 `;
 
 const Dropdown = styled.div`
-  flex: 1;
+  width: 100%;
 `;
 
 const DropdownSelect = styled.select`
   width: 100%;
-  padding: 6px 10px;
-  background-color: #2a2a2a;
+  padding: 8px 10px;
+  background-color: #1a1a1a;
   border: 1px solid #444;
   color: #ffffff;
   font-family: "Courier New", monospace;
@@ -300,7 +341,7 @@ const DropdownSelect = styled.select`
   outline: none;
 
   option {
-    background-color: #2a2a2a;
+    background-color: #1a1a1a;
     color: #ffffff;
   }
 `;
@@ -309,15 +350,14 @@ const TagsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  flex: 1;
 `;
 
 const TagButton = styled.button`
-  padding: 8px 16px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 20px;
+  border-radius: 15px;
   font-family: "Courier New", monospace;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -340,13 +380,13 @@ const TagButton = styled.button`
 
 const ButtonSection = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 10px;
-  margin-bottom: 20px;
 `;
 
 const SearchButton = styled.button`
-  padding: 8px 16px;
-  background-color: #2a2a2a;
+  padding: 10px 16px;
+  background-color: #1a1a1a;
   border: 1px solid #444;
   color: #ffffff;
   font-family: "Courier New", monospace;
@@ -354,13 +394,18 @@ const SearchButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #3a3a3a;
+    background-color: #333;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
 const ClearButton = styled.button`
-  padding: 8px 16px;
-  background-color: #2a2a2a;
+  padding: 10px 16px;
+  background-color: #1a1a1a;
   border: 1px solid #444;
   color: #ffffff;
   font-family: "Courier New", monospace;
@@ -368,13 +413,15 @@ const ClearButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #3a3a3a;
+    background-color: #333;
   }
 `;
 
 const ResultsSection = styled.div`
   border: 1px solid #444;
   padding: 15px;
+  background-color: #2a2a2a;
+  min-height: 500px;
 `;
 
 const ResultsHeader = styled.div`
@@ -382,6 +429,8 @@ const ResultsHeader = styled.div`
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #444;
 `;
 
 const ResultsIcon = styled.span`
@@ -397,22 +446,22 @@ const ResultsTitle = styled.h2`
 
 const BooksGrid = styled.div`
   display: flex;
+  flex-direction: column;
   gap: 15px;
-  flex-wrap: wrap;
+  max-height: 600px;
+  overflow-y: auto;
 `;
 
 const BookCard = styled.div`
   padding: 15px;
-  background-color: #2a2a2a;
+  background-color: #1a1a1a;
   border: 1px solid #444;
   color: #ffffff;
   font-family: "Courier New", monospace;
   cursor: pointer;
-  min-width: 280px;
-  max-width: 320px;
 
   &:hover {
-    background-color: #3a3a3a;
+    background-color: #333;
     border-color: #555;
   }
 `;

@@ -47,6 +47,7 @@ export default Results;
 const ResultsPanel = styled.div`
   flex: 1;
   min-height: 500px;
+  width: 100%;
 `;
 
 const ResultsSection = styled.div`
@@ -80,8 +81,26 @@ const BooksGrid = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-height: 600px;
+  max-height: calc(100vh - 300px);
   overflow-y: auto;
+
+  /* Hide scrollbar when not needed */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #1a1a1a;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 `;
 
 const BookCard = styled.div`

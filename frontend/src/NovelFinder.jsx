@@ -161,9 +161,10 @@ const Container = styled.div`
   color: #ffffff;
   min-height: 100vh;
   font-family: "Courier New", monospace;
-  max-width: 1400px;
-  margin: 0 auto;
-  border: 2px solid #333;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border: none;
 `;
 
 const Header = styled.div`
@@ -193,10 +194,11 @@ const MainContent = styled.div`
 `;
 
 const SearchPanel = styled.div`
-  flex: 0 0 400px;
+  flex: 0 0 450px;
   background-color: #2a2a2a;
   border: 1px solid #444;
   padding: 20px;
+  height: fit-content;
 `;
 
 const SearchSection = styled.div`

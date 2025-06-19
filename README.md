@@ -38,9 +38,13 @@ cd backend
 #### Create and activate virtual environment
 
 ```bash
-# Windows
+# Windows (Command Prompt)
 python -m venv venv
 venv\Scripts\activate
+
+# Windows (PowerShell)
+python -m venv venv
+venv\Scripts\Activate.ps1
 
 # macOS/Linux
 python3 -m venv venv
@@ -56,7 +60,11 @@ pip install -r requirements.txt
 #### Start the Django development server
 
 ```bash
+# If virtual environment activation works properly
 python manage.py runserver
+
+# If you have ModuleNotFoundError error, try deleting venv contents and reinstalling packages with
+venv\Scripts\python.exe -m pip install --no-cache-dir -r requirements.txt
 ```
 
 The Django backend will be running at `http://localhost:8000`

@@ -137,7 +137,7 @@ function NovelFinder() {
 
           <ButtonSection>
             <SearchButton onClick={handleSearch} disabled={loading}>
-              {loading ? "Searching..." : "Find Novel"}
+              Find Novels
             </SearchButton>
             <ClearButton onClick={handleClearFilters}>
               Clear Filters

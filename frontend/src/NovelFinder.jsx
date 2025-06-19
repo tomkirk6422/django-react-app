@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import axios from "axios";
+import { fetchProducts, fetchAllProducts } from "./api.js";
 
 function NovelFinder() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -9,9 +9,6 @@ function NovelFinder() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // API base URL - adjust if your Django server runs on a different port
-  const API_BASE_URL = "http://localhost:8000/api";
 
   const availableTags = [
     "Classic",
@@ -32,64 +29,59 @@ function NovelFinder() {
     );
   };
 
-  const handleClearFilters = () => {
+  const handleClearFilters = async () => {
     setSelectedTags([]);
     setSearchTerm("");
     setSelectedCategory("");
     // Fetch all products after clearing filters
-    fetchProducts();
+    await loadProducts();
   };
 
-  // Function to build query parameters for API call
-  const buildQueryParams = () => {
-    const params = new URLSearchParams();
-
-    // Add search term if provided
-    if (searchTerm.trim()) {
-      params.append("search", searchTerm.trim());
-    }
-
-    // Add category filter if selected
-    if (selectedCategory) {
-      params.append("category__name", selectedCategory);
-    }
-
-    // Add tag filters if selected
-    selectedTags.forEach((tag) => {
-      params.append("tags__name", tag);
-    });
-
-    return params.toString();
-  };
-
-  // Function to fetch products from API
-  const fetchProducts = async () => {
+  // Function to load products using the API
+  const loadProducts = async (
+    searchTerm = "",
+    selectedCategory = "",
+    selectedTags = []
+  ) => {
     setLoading(true);
     setError("");
 
-    try {
-      const queryParams = buildQueryParams();
-      const url = `${API_BASE_URL}/products/${
-        queryParams ? `?${queryParams}` : ""
-      }`;
-      const response = await axios.get(url);
-      setProducts(response.data);
-    } catch (err) {
-      console.error("API Error:", err);
-      setError(err.response?.data?.detail || "Failed to fetch products");
-    } finally {
-      setLoading(false);
+    const result = await fetchProducts(
+      searchTerm,
+      selectedCategory,
+      selectedTags
+    );
+
+    if (result.success) {
+      setProducts(result.data);
+    } else {
+      setError(result.error);
     }
+
+    setLoading(false);
   };
 
   // Function to handle search button click
   const handleSearch = () => {
-    fetchProducts();
+    loadProducts(searchTerm, selectedCategory, selectedTags);
   };
 
   // Load initial products when component mounts
   useEffect(() => {
-    fetchProducts();
+    const loadInitialProducts = async () => {
+      setLoading(true);
+      const result = await fetchAllProducts();
+
+      if (result.success) {
+        setProducts(result.data);
+      } else {
+        setError(result.error);
+      }
+
+      setLoading(false);
+    };
+
+    loadInitialProducts();
   }, []);
 
   return (
@@ -117,8 +109,10 @@ function NovelFinder() {
           <FiltersSection>
             <FilterRow>
               <FilterGroup>
-                <FilterIcon>📁</FilterIcon>
-                <FilterLabel>Category:</FilterLabel>
+                <FilterLabel>
+                  <FilterIcon>📁</FilterIcon>
+                  Category:
+                </FilterLabel>
                 <Dropdown>
                   <DropdownSelect
                     value={selectedCategory}
@@ -139,8 +133,10 @@ function NovelFinder() {
 
             <FilterRow>
               <FilterGroup>
-                <FilterIcon>🏷️</FilterIcon>
-                <FilterLabel>Tags:</FilterLabel>
+                <FilterLabel>
+                  <FilterIcon>🏷️</FilterIcon>
+                  Tags:
+                </FilterLabel>
                 <TagsContainer>
                   {availableTags.map((tag) => (
                     <TagButton

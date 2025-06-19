@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
 function NovelFinder() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
-  const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // API base URL - adjust if your Django server runs on a different port
+  const API_BASE_URL = "http://localhost:8000/api";
 
   const availableTags = [
     "Classic",
@@ -26,11 +32,72 @@ function NovelFinder() {
     );
   };
 
+  const handleClearFilters = () => {
+    setSelectedTags([]);
+    setSearchTerm("");
+    setSelectedCategory("");
+  };
+
+  // Function to build query parameters for API call
+  const buildQueryParams = () => {
+    const params = new URLSearchParams();
+
+    // Add search term if provided
+    if (searchTerm.trim()) {
+      params.append("search", searchTerm.trim());
+    }
+
+    // Add category filter if selected
+    if (selectedCategory) {
+      params.append("category__name", selectedCategory);
+    }
+
+    // Add tag filters if selected
+    selectedTags.forEach((tag) => {
+      params.append("tags__name", tag);
+    });
+
+    return params.toString();
+  };
+
+  // Function to fetch products from API
+  const fetchProducts = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const queryParams = buildQueryParams();
+      const url = `${API_BASE_URL}/products/${
+        queryParams ? `?${queryParams}` : ""
+      }`;
+
+      console.log("Fetching from:", url); // For debugging
+
+      const response = await axios.get(url);
+      setProducts(response.data);
+    } catch (err) {
+      console.error("API Error:", err);
+      setError(err.response?.data?.detail || "Failed to fetch products");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to handle search button click
+  const handleSearch = () => {
+    fetchProducts();
+  };
+
+  // Load initial products when component mounts
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
     <Container>
       <Header>
         <HeaderIcon>📚</HeaderIcon>
-        <HeaderTitle>Novel Finder</HeaderTitle>
+        <HeaderTitle>Novel Finder (Product Finder)</HeaderTitle>
       </Header>
 
       <SearchSection>
@@ -38,9 +105,10 @@ function NovelFinder() {
         <SearchBox>
           <SearchInput
             type="text"
-            placeholder="Search Box"
+            placeholder="Search by description..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
           />
         </SearchBox>
       </SearchSection>
@@ -55,11 +123,14 @@ function NovelFinder() {
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                <option value="fiction">Fiction</option>
-                <option value="non-fiction">Non-Fiction</option>
-                <option value="science">Biography</option>
-                <option value="non-fiction">children</option>
-                <option value="science">Science & Technology</option>
+                <option value="">Select Category</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Biography">Biography</option>
+                <option value="Children">Children</option>
+                <option value="Science & Technology">
+                  Science & Technology
+                </option>
               </DropdownSelect>
             </Dropdown>
           </FilterGroup>
@@ -69,58 +140,63 @@ function NovelFinder() {
           <FilterGroup>
             <FilterIcon>🏷️</FilterIcon>
             <FilterLabel>Tags:</FilterLabel>
-            <MultiSelect>
-              <MultiSelectContainer>
-                <MultiSelectInput
-                  placeholder={
-                    selectedTags.length > 0
-                      ? `${selectedTags.length} selected`
-                      : "[Multi-select]"
-                  }
-                  readOnly
-                  onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
-                />
-                <DropdownArrow
-                  onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
+            <TagsContainer>
+              {availableTags.map((tag) => (
+                <TagButton
+                  key={tag}
+                  selected={selectedTags.includes(tag)}
+                  onClick={() => handleTagToggle(tag)}
                 >
-                  {isTagsDropdownOpen ? "▲" : "▼"}
-                </DropdownArrow>
-                {isTagsDropdownOpen && (
-                  <TagsDropdown>
-                    {availableTags.map((tag) => (
-                      <TagOption key={tag}>
-                        <TagCheckbox
-                          type="checkbox"
-                          checked={selectedTags.includes(tag)}
-                          onChange={() => handleTagToggle(tag)}
-                        />
-                        <TagLabel>{tag}</TagLabel>
-                      </TagOption>
-                    ))}
-                  </TagsDropdown>
-                )}
-              </MultiSelectContainer>
-              {selectedTags.length > 0 && (
-                <SelectedTagsDisplay>
-                  {selectedTags.map((tag) => (
-                    <SelectedTag key={tag}>
-                      {tag}
-                      <RemoveTagButton onClick={() => handleTagToggle(tag)}>
-                        ×
-                      </RemoveTagButton>
-                    </SelectedTag>
-                  ))}
-                </SelectedTagsDisplay>
-              )}
-            </MultiSelect>
+                  {tag}
+                </TagButton>
+              ))}
+            </TagsContainer>
           </FilterGroup>
         </FilterRow>
       </FiltersSection>
 
       <ButtonSection>
-        <SearchButton>Find Novel</SearchButton>
-        <ClearButton>Clear Filters</ClearButton>
+        <SearchButton onClick={handleSearch} disabled={loading}>
+          {loading ? "Searching..." : "Find Novel"}
+        </SearchButton>
+        <ClearButton onClick={handleClearFilters}>Clear Filters</ClearButton>
       </ButtonSection>
+
+      <ResultsSection>
+        <ResultsHeader>
+          <ResultsIcon>📖</ResultsIcon>
+          <ResultsTitle>Book Results ({products.length} found)</ResultsTitle>
+        </ResultsHeader>
+
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+
+        {loading ? (
+          <LoadingMessage>Loading products...</LoadingMessage>
+        ) : (
+          <BooksGrid>
+            {products.length > 0
+              ? products.map((product) => (
+                  <BookCard key={product.identifier}>
+                    <BookTitle>{product.name}</BookTitle>
+                    <BookDescription>{product.description}</BookDescription>
+                    <BookMeta>
+                      <BookCategory>📁 {product.category?.name}</BookCategory>
+                      {product.tags && product.tags.length > 0 && (
+                        <BookTags>
+                          🏷️ {product.tags.map((tag) => tag.name).join(", ")}
+                        </BookTags>
+                      )}
+                    </BookMeta>
+                  </BookCard>
+                ))
+              : !loading && (
+                  <NoResultsMessage>
+                    No products found. Try adjusting your filters.
+                  </NoResultsMessage>
+                )}
+          </BooksGrid>
+        )}
+      </ResultsSection>
     </Container>
   );
 }
@@ -237,107 +313,37 @@ const DropdownSelect = styled.select`
   }
 `;
 
-const MultiSelect = styled.div`
+const TagsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   flex: 1;
 `;
 
-const MultiSelectContainer = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-`;
-
-const MultiSelectInput = styled.input`
-  width: 100%;
-  padding: 6px 10px;
-  background-color: #2a2a2a;
-  border: 1px solid #444;
-  color: #ffffff;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-  outline: none;
-  cursor: pointer;
-
-  &::placeholder {
-    color: #888;
-  }
-`;
-
-const DropdownArrow = styled.div`
-  position: absolute;
-  right: 10px;
-  cursor: pointer;
-  color: #888;
-  user-select: none;
-`;
-
-const TagsDropdown = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: #2a2a2a;
-  border: 1px solid #444;
-  border-top: none;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000;
-`;
-
-const TagOption = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #3a3a3a;
-  }
-`;
-
-const TagCheckbox = styled.input`
-  margin-right: 8px;
-  cursor: pointer;
-`;
-
-const TagLabel = styled.span`
-  color: #ffffff;
-  font-family: "Courier New", monospace;
-  font-size: 14px;
-  cursor: pointer;
-`;
-
-const SelectedTagsDisplay = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 8px;
-`;
-
-const SelectedTag = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 8px;
-  background-color: #4ade80;
-  color: #000000;
-  font-family: "Courier New", monospace;
-  font-size: 12px;
-  border-radius: 3px;
-`;
-
-const RemoveTagButton = styled.button`
-  background: none;
+const TagButton = styled.button`
+  padding: 8px 16px;
   border: none;
-  color: #000000;
-  cursor: pointer;
+  border-radius: 20px;
+  font-family: "Courier New", monospace;
   font-size: 14px;
-  font-weight: bold;
-  padding: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-  &:hover {
-    color: #666;
-  }
+  ${(props) =>
+    props.selected
+      ? `
+    background-color: #f59e0b;
+    color: #000000;
+    font-weight: bold;
+  `
+      : `
+    background-color: #f5f5dc;
+    color: #000000;
+    
+    &:hover {
+      background-color: #e5e5cc;
+    }
+  `}
 `;
 
 const ButtonSection = styled.div`
@@ -404,15 +410,72 @@ const BooksGrid = styled.div`
 `;
 
 const BookCard = styled.div`
-  padding: 15px 20px;
+  padding: 15px;
   background-color: #2a2a2a;
   border: 1px solid #444;
   color: #ffffff;
   font-family: "Courier New", monospace;
-  font-size: 14px;
   cursor: pointer;
+  min-width: 280px;
+  max-width: 320px;
 
   &:hover {
     background-color: #3a3a3a;
+    border-color: #555;
   }
+`;
+
+const ErrorMessage = styled.div`
+  color: #ef4444;
+  background-color: #2a1a1a;
+  border: 1px solid #ef4444;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+`;
+
+const LoadingMessage = styled.div`
+  color: #60a5fa;
+  text-align: center;
+  padding: 20px;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+`;
+
+const NoResultsMessage = styled.div`
+  color: #888;
+  text-align: center;
+  padding: 20px;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+`;
+
+const BookTitle = styled.h3`
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #4ade80;
+`;
+
+const BookDescription = styled.p`
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #ffffff;
+  line-height: 1.4;
+`;
+
+const BookMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const BookCategory = styled.span`
+  font-size: 12px;
+  color: #fbbf24;
+`;
+
+const BookTags = styled.span`
+  font-size: 12px;
+  color: #60a5fa;
 `;

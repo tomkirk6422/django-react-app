@@ -156,12 +156,12 @@ export default NovelFinder;
 
 const Container = styled.div`
   position: relative;
-  padding: 20px;
+  padding: 0;
   background-color: #1a1a1a;
   color: #ffffff;
   min-height: 100vh;
   font-family: "Courier New", monospace;
-  width: 100%;
+  width: 100vw;
   max-width: none;
   margin: 0;
   border: none;
@@ -171,10 +171,10 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 15px;
+  padding: 15px 20px;
   background-color: #2a2a2a;
-  border: 1px solid #444;
-  margin-bottom: 15px;
+  border-bottom: 1px solid #444;
+  margin: 0;
 `;
 
 const HeaderIcon = styled.span`
@@ -189,16 +189,18 @@ const HeaderTitle = styled.h1`
 
 const MainContent = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 0;
   align-items: flex-start;
+  height: calc(100vh - 70px);
 `;
 
 const SearchPanel = styled.div`
   flex: 0 0 450px;
   background-color: #2a2a2a;
-  border: 1px solid #444;
+  border-right: 1px solid #444;
   padding: 20px;
-  height: fit-content;
+  height: 100%;
+  overflow-y: auto;
 `;
 
 const SearchSection = styled.div`

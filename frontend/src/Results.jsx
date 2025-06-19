@@ -46,15 +46,17 @@ export default Results;
 
 const ResultsPanel = styled.div`
   flex: 1;
-  min-height: 500px;
+  height: 100%;
   width: 100%;
 `;
 
 const ResultsSection = styled.div`
-  border: 1px solid #444;
-  padding: 15px;
+  border: none;
+  padding: 20px;
   background-color: #2a2a2a;
-  min-height: 500px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ResultsHeader = styled.div`
@@ -81,16 +83,18 @@ const BooksGrid = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-height: calc(100vh - 300px);
+  flex: 1;
   overflow-y: auto;
+  padding-right: 10px;
 
-  /* Hide scrollbar when not needed */
+  /* Custom scrollbar styling */
   &::-webkit-scrollbar {
     width: 8px;
   }
 
   &::-webkit-scrollbar-track {
     background: #1a1a1a;
+    border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {

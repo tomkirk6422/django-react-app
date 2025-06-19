@@ -70,9 +70,6 @@ function NovelFinder() {
       const url = `${API_BASE_URL}/products/${
         queryParams ? `?${queryParams}` : ""
       }`;
-
-      console.log("Fetching from:", url); // For debugging
-
       const response = await axios.get(url);
       setProducts(response.data);
     } catch (err) {
@@ -87,11 +84,6 @@ function NovelFinder() {
   const handleSearch = () => {
     fetchProducts();
   };
-
-  // Load initial products when component mounts
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   return (
     <Container>

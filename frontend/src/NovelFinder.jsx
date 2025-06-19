@@ -157,10 +157,11 @@ export default NovelFinder;
 const Container = styled.div`
   position: relative;
   padding: 0;
-  background-color: #1a1a1a;
-  color: #ffffff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #2d3748;
   min-height: 100vh;
-  font-family: "Courier New", monospace;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
   width: 100vw;
   max-width: none;
   margin: 0;
@@ -172,9 +173,11 @@ const Header = styled.div`
   align-items: center;
   gap: 10px;
   padding: 15px 20px;
-  background-color: #2a2a2a;
-  border-bottom: 1px solid #444;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   margin: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 `;
 
 const HeaderIcon = styled.span`
@@ -184,7 +187,8 @@ const HeaderIcon = styled.span`
 const HeaderTitle = styled.h1`
   margin: 0;
   font-size: 18px;
-  color: #4ade80;
+  color: #4c51bf;
+  font-weight: 600;
 `;
 
 const MainContent = styled.div`
@@ -196,11 +200,13 @@ const MainContent = styled.div`
 
 const SearchPanel = styled.div`
   flex: 0 0 450px;
-  background-color: #2a2a2a;
-  border-right: 1px solid #444;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
   padding: 20px;
   height: 100%;
   overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
 `;
 
 const SearchSection = styled.div`
@@ -212,28 +218,37 @@ const SearchSection = styled.div`
 
 const SearchIcon = styled.span`
   font-size: 18px;
-  color: #60a5fa;
+  color: #6366f1;
 `;
 
 const SearchBox = styled.div`
   flex: 1;
-  background-color: #1a1a1a;
-  border: 1px solid #444;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   padding: 2px;
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
 `;
 
 const SearchInput = styled.input`
   width: 100%;
-  padding: 8px 12px;
+  padding: 12px 16px;
   background: transparent;
   border: none;
-  color: #ffffff;
-  font-family: "Courier New", monospace;
+  color: #2d3748;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
   font-size: 14px;
   outline: none;
+  border-radius: 10px;
 
   &::placeholder {
-    color: #888;
+    color: #a0aec0;
   }
 `;
 
@@ -259,8 +274,9 @@ const FilterLabel = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #fbbf24;
+  color: #4c51bf;
   font-size: 14px;
+  font-weight: 600;
   margin-bottom: 8px;
 `;
 
@@ -270,17 +286,26 @@ const Dropdown = styled.div`
 
 const DropdownSelect = styled.select`
   width: 100%;
-  padding: 8px 10px;
-  background-color: #1a1a1a;
-  border: 1px solid #444;
-  color: #ffffff;
-  font-family: "Courier New", monospace;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  color: #2d3748;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
   font-size: 14px;
   outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
 
   option {
-    background-color: #1a1a1a;
-    color: #ffffff;
+    background: #ffffff;
+    color: #2d3748;
   }
 `;
 
@@ -291,27 +316,33 @@ const TagsContainer = styled.div`
 `;
 
 const TagButton = styled.button`
-  padding: 6px 12px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 15px;
-  font-family: "Courier New", monospace;
+  border-radius: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
   font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   ${(props) =>
     props.selected
       ? `
-    background-color: #f59e0b;
-    color: #000000;
-    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   `
       : `
-    background-color: #f5f5dc;
-    color: #000000;
+    background: #ffffff;
+    color: #4a5568;
     
     &:hover {
-      background-color: #e5e5cc;
+      background: #f7fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
   `}
 `;
@@ -323,34 +354,48 @@ const ButtonSection = styled.div`
 `;
 
 const SearchButton = styled.button`
-  padding: 10px 16px;
-  background-color: #1a1a1a;
-  border: 1px solid #444;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
   color: #ffffff;
-  font-family: "Courier New", monospace;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
   }
 `;
 
 const ClearButton = styled.button`
-  padding: 10px 16px;
-  background-color: #1a1a1a;
-  border: 1px solid #444;
-  color: #ffffff;
-  font-family: "Courier New", monospace;
+  padding: 12px 20px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  color: #4a5568;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
 
   &:hover {
-    background-color: #333;
+    background: #f7fafc;
+    border-color: #cbd5e0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `;

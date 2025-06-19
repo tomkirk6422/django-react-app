@@ -46,6 +46,8 @@ export const fetchProducts = async (
     console.log("Fetching from:", url); // For debugging
 
     const response = await axios.get(url);
+
+    console.log(response.data);
     return {
       success: true,
       data: response.data,
@@ -60,32 +62,3 @@ export const fetchProducts = async (
     };
   }
 };
-
-// Function to fetch all products (no filters)
-export const fetchAllProducts = async () => {
-  return fetchProducts("", "", []);
-};
-
-// Function to search products by term
-export const searchProducts = async (searchTerm) => {
-  return fetchProducts(searchTerm, "", []);
-};
-
-// Function to filter products by category
-export const filterProductsByCategory = async (category) => {
-  return fetchProducts("", category, []);
-};
-
-// Function to filter products by tags
-export const filterProductsByTags = async (tags) => {
-  return fetchProducts("", "", tags);
-};
-
-// Function to filter products with multiple criteria
-export const filterProducts = async (filters) => {
-  const { searchTerm = "", category = "", tags = [] } = filters;
-  return fetchProducts(searchTerm, category, tags);
-};
-
-// Export API base URL in case it's needed elsewhere
-export { API_BASE_URL };

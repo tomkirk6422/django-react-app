@@ -20,6 +20,7 @@ class ProductViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         # Both prefetch_related and select_related prevent Django from running one query for the main objects (N),
         # and then an additional query for each object's related items (N+1 queries), which is inefficient.
         queryset = Product.objects.select_related("category").prefetch_related("tags")
+        
         # Im assuming the searching by multiple tags is using OR Logic, so a book only has to match 1 of 
         # the tags in the query params to be included in the query. DjangoFilterBackend with filterset_fields
         # only uses the last parameter when multiple tags__name values are provided, so we handle multiple tag filtering manually 
